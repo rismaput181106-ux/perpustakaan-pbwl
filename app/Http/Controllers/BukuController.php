@@ -42,14 +42,33 @@ class BukuController extends Controller
         return redirect()->back()->with('success', 'Buku "' . $buku->judul . '" berhasil diajukan untuk dipinjam!');
     }
 
-    //punya a3
-    public function hapusCelah($id)
+    // ==========================================
+    // SOAL 3: METHOD UNTUK GATE (LANGSUNG KE WEB)
+    // ==========================================
+    
+    public function create()
     {
-        $buku = Buku::find($id);
-        if ($buku) {
-            $buku->delete();
-            return "Buku dengan ID $id berhasil dihapus (Celah CSRF)!";
-        }
-        return "Buku tidak ditemukan.";
+        return view('buku.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'kategori_id' => 'required',
+            'judul' => 'required',
+            'penulis' => 'required',
+            'tahun_terbit' => 'required|integer',
+        ]);
+
+        Buku::create($request->all());
+
+        return redirect()->route('buku.index')->with('success', 'Buku berhasil ditambahkan!');
+    }
+
+    public function destroy($id)
+    {
+        $buku = Buku::findOrFail($id);
+        $buku->delete();
+        return redirect()->route('buku.index')->with('success', 'Buku berhasil dihapus!');
     }
 }

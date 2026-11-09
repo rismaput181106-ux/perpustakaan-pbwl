@@ -12,7 +12,7 @@
             <tbody>
                 @foreach($bukus as $buku)
                 <tr>
-                    <td class="border p-2">{!! $buku->judul !!}</td>
+                    <td class="border p-2">{{ $buku->judul }}</td>
                     <td class="border p-2">{{ $buku->penulis }}</td>
                 </tr>
                 @endforeach

@@ -5,10 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnBatal = document.getElementById('btn-batal');
     const formTitle = document.getElementById('form-title');
 
-    // CEK ROLE DARI HTML (Kita taruh data-role di body nanti)
+    // CEK ROLE DARI HTML (data-role ada di tag body)
     const userRole = document.body.getAttribute('data-role') || '';
     const isAdminOrPetugas = (userRole === 'admin' || userRole === 'petugas');
     const isSiswa = (userRole === 'siswa');
+
+    // Ambil token CSRF dari meta tag (buat hapus)
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     function showAlert(message, type = 'success') {
         if (!alertArea) return;
@@ -45,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const result = await response.json();
             tbody.innerHTML = '';
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
             result.data.forEach((item, index) => {
                 let tombolAksi = '';
@@ -175,13 +177,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ==========================================
+    // SOAL 2C: PERBAIKAN FUNGSI HAPUS (PAKAI CSRF)
+    // ==========================================
     window.hapusBuku = async (id) => {
         if (!confirm('Apakah Anda yakin ingin menghapus buku ini?')) return;
 
         try {
-            const response = await fetch(`/api/buku/${id}`, {
+            const response = await fetch(`/buku/${id}`, {
                 method: 'DELETE',
-                headers: { 'Accept': 'application/json' }
+                headers: { 
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken // <-- Token CSRF wajib dikirim
+                }
             });
 
             if (!response.ok) throw new Error('Gagal menghapus data.');

@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Definisikan Gate 'kelola-buku'
+        \Illuminate\Support\Facades\Gate::define('kelola-buku', function ($user) {
+            return $user->hasAnyRole(['admin', 'petugas']);
+        });
     }
 }

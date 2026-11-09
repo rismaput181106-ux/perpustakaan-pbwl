@@ -15,29 +15,36 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    //punya a1
+    // Celah A1 (XSS)
     Route::get('/buku-celah', function () {
         return view('buku.celah', ['bukus' => \App\Models\Buku::all()]);
     })->name('buku.celah');
-    //punya a4
+
+    // Celah A4 (IDOR)
     Route::get('/peminjaman/{id}', [\App\Http\Controllers\PeminjamanController::class, 'showCelah'])->name('peminjaman.show.celah');
 
-    //punya a2
+    // Soal 2B: Perbaikan A2 (SQLi)
     Route::get('/buku-cari', function (\Illuminate\Http\Request $request) {
         $judul = $request->query('judul');
-        $bukus = \Illuminate\Support\Facades\DB::select("SELECT * FROM bukus WHERE judul = '$judul'");
+        $bukus = \Illuminate\Support\Facades\DB::select("SELECT * FROM bukus WHERE judul = ?", [$judul]);
         return response()->json($bukus);
     })->name('buku.cari');
 
-    //punya a3
-    Route::get('/buku/{id}/hapus', [BukuController::class, 'hapusCelah'])->name('buku.hapus.celah');
-    
+    // Soal 3: Route Kelola Buku (Via Gate)
+    Route::middleware(['can:kelola-buku'])->group(function () {
+        Route::get('/buku/create', [BukuController::class, 'create'])->name('buku.create');
+        Route::post('/buku', [BukuController::class, 'store'])->name('buku.store');
+        Route::delete('/buku/{id}', [BukuController::class, 'destroy'])->name('buku.destroy');
+    });
+
+    // Route Baca Buku
     Route::middleware(['role:admin|petugas|siswa'])->group(function () {
         Route::get('/buku', [BukuController::class, 'index'])->name('buku.index');
         Route::get('/buku/{id}', [BukuController::class, 'show'])->name('buku.show');
         Route::post('/buku/{id}/pinjam', [BukuController::class, 'pinjam'])->name('buku.pinjam');
     });
 
+    // Area Admin
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/dashboard', function () {
             return view('admin.dashboard');
@@ -51,6 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/laporan', function () { return view('admin.laporan'); })->name('admin.laporan');
     });
 
+    // Area Petugas
     Route::middleware('role:petugas')->group(function () {
         Route::get('/petugas/dashboard', function () {
             return view('petugas.dashboard');
@@ -65,6 +73,7 @@ Route::middleware('auth')->group(function () {
         })->name('petugas.pengembalian');
     });
 
+    // Area Siswa
     Route::middleware('role:siswa')->group(function () {
         Route::get('/siswa/riwayat', function () {
             $user = auth()->user();
@@ -77,6 +86,7 @@ Route::middleware('auth')->group(function () {
         })->name('siswa.riwayat');
     });
 
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
