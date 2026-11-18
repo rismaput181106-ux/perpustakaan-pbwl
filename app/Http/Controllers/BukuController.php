@@ -42,10 +42,6 @@ class BukuController extends Controller
         return redirect()->back()->with('success', 'Buku "' . $buku->judul . '" berhasil diajukan untuk dipinjam!');
     }
 
-    // ==========================================
-    // SOAL 3: METHOD UNTUK GATE (LANGSUNG KE WEB)
-    // ==========================================
-    
     public function create()
     {
         return view('buku.create');

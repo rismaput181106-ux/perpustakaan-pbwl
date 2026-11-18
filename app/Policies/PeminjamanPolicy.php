@@ -2,23 +2,26 @@
 
 namespace App\Policies;
 
-use App\Models\Peminjaman;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Peminjaman;
 
 class PeminjamanPolicy
 {
-    /**
-     * Tentukan apakah user boleh melihat data peminjaman.
-     */
+    // Admin & Petugas bebas lihat semua
+    public function viewAny(User $user): bool
+    {
+        return $user->hasAnyRole(['admin', 'petugas']);
+    }
+
+    // Aturan utama buat IDOR: Siswa cuma boleh lihat miliknya sendiri
     public function view(User $user, Peminjaman $peminjaman): bool
     {
-        // Admin & Petugas boleh lihat semua
+        // Admin & Petugas boleh lihat punya siapa aja
         if ($user->hasAnyRole(['admin', 'petugas'])) {
             return true;
         }
 
-        // Siswa HANYA boleh lihat miliknya sendiri (cek berdasarkan email anggota)
-        return $user->email === $peminjaman->anggota->email;
+        // Siswa: cek apakah email dia sama dengan email si peminjam (anggota)
+        return $peminjaman->anggota && $user->email === $peminjaman->anggota->email;
     }
 }

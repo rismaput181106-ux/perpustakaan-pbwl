@@ -30,7 +30,6 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <!-- TOMBOL TAMBAH (Hanya Muncul buat yang punya akses) -->
         @can('kelola-buku')
             <div class="mb-4" style="margin-bottom: 20px;">
                 <a href="{{ route('buku.create') }}" class="btn btn-primary">Tambah Buku Baru</a>
