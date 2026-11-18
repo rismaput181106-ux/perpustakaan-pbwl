@@ -1,22 +1,22 @@
 <?php
 
-// 1. Autoloader
+// 1. Panggil autoloader Composer
 require __DIR__.'/../vendor/autoload.php';
 
-// 2. Set folder sementara ke /tmp SEBELUM aplikasi booting
-$_ENV['VIEW_COMPILED_PATH'] = '/tmp';
+// 2. Set environment biar nggak ngandelin cache /tmp
 putenv('VIEW_COMPILED_PATH=/tmp');
 
-// 3. Boot aplikasi Laravel
+// 3. Panggil aplikasi Laravel
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-// 4. Paksa storage & cache ke /tmp
+// 4. JANGAN pake cache view, langsung render dari folder resources
 $app->useStoragePath('/tmp');
 
 // 5. Jalankan
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
-)->send();
+);
 
+$response->send();
 $kernel->terminate($request, $response);
