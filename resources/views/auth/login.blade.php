@@ -1,4 +1,12 @@
 <x-guest-layout>
+    <!-- Tambahan NIM untuk Soal 5 -->
+    <div class="mb-6 text-center">
+        <h2 class="text-2xl font-bold text-gray-800">
+            Perpustakaan - 250441100117
+        </h2>
+        <p class="text-sm text-gray-500 mt-1">Silakan login untuk melanjutkan</p>
+    </div>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
