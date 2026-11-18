@@ -1,5 +1,8 @@
 <?php
 
+// WAJIB: Panggil autoloader Composer
+require __DIR__.'/../vendor/autoload.php';
+
 // Paksa Laravel nulis file sementara ke folder /tmp (karena Vercel Read-Only)
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
