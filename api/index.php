@@ -1,15 +1,19 @@
 <?php
 
-// 1. Panggil autoloader Composer
-require __DIR__ . '/../vendor/autoload.php';
+// 1. Autoloader
+require __DIR__.'/../vendor/autoload.php';
 
-// 2. Panggil aplikasi Laravel
-$app = require_once __DIR__ . '/../bootstrap/app.php';
+// 2. Set folder sementara ke /tmp SEBELUM aplikasi booting
+$_ENV['VIEW_COMPILED_PATH'] = '/tmp';
+putenv('VIEW_COMPILED_PATH=/tmp');
 
-// 3. Paksa Laravel nulis file sementara ke /tmp (karena Vercel Read-Only)
+// 3. Boot aplikasi Laravel
+$app = require_once __DIR__.'/../bootstrap/app.php';
+
+// 4. Paksa storage & cache ke /tmp
 $app->useStoragePath('/tmp');
 
-// 4. Jalankan aplikasi
+// 5. Jalankan
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
